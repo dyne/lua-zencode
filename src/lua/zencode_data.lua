@@ -44,18 +44,18 @@ ZEN.get = function(obj, key, conversion)
    local t = type(k)
    if iszen(t) and conversion then
       res = conversion(k)
-      goto ok
+      return res
    end
    if iszen(t) and not conversion then
       res = k
-      goto ok
+      return res
    end
    if t == 'string' then
       res = ZEN.CONF.input.encoding.fun(k)
       if conversion then
          res = conversion(res)
       end
-      goto ok
+      return res
    end
    if t == 'number' then
       res = k
@@ -66,7 +66,6 @@ ZEN.get = function(obj, key, conversion)
          res = deepmap(conversion, res)
       end
    end
-   ::ok::
    assert(
       ZEN.OK and res,
       'ZEN.get on invalid key: ' .. key .. ' (' .. t .. ')', 2)

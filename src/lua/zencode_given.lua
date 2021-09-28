@@ -17,7 +17,7 @@
 --If not, see http://www.gnu.org/licenses/agpl.txt
 --
 --Last modified by Denis Roio
---on Monday, 26th April 2021
+--on Tuesday, 28th September 2021
 --]]
 
 -- TODO: use strict table
@@ -57,9 +57,6 @@ local function pick(what, conv)
    )
    TMP.name = what
    assert(ZEN.OK)
-   if DEBUG > 1 then
-      ZEN:ftrace('pick found ' .. what)
-   end
 end
 
 ---
@@ -83,20 +80,14 @@ local function pickin(section, what, conv, fail)
    root = IN.KEYS[section]
    if root then
       raw = root[what]
-      if raw then
-         goto found
+   end
+   if not raw then
+      root = IN[section]
+      if root then
+         raw = root[what]
       end
    end
-   root = IN[section]
-   if root then
-      raw = root[what]
-      if raw then
-         goto found
-      end
-   end
-
    -- TODO: check all corner cases to make sure TMP[what] is a k/v map
-   ::found::
    ZEN.assert(
       raw,
       "Cannot find '" .. what .. "' inside '" .. section .. "' (null value?)"
