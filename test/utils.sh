@@ -27,19 +27,29 @@ zexe() {
 	echo >&2
 	echo "====================================" >&2
 	>&2 echo "== TEST: ${SUBDOC} $out"
+	data=""
+	keys=""
+	for i in ${*}; do
+		if [[ "$i" == "-a" ]]; then data=1; continue; fi
+		if [[ $data == 1 ]]; then data="$i"; fi
+		if [[ "$i" == "-k" ]]; then keys=1; continue; fi
+		if [[ $keys == 1 ]]; then keys="$i"; fi
+	done
+	echo "data: $data" >&2
+	echo "keys: $keys" >&2
 	t=`mktemp -d`
 	# >&2 echo $t
 	        set +e
 		tee "$out" | \
-			luajit -l zenroom ../ztest.lua $* 2>$t/stderr 1>$t/stdout
+			lua5.1 -l zenroom ../ztest.lua "$data $keys" 2>$t/stderr 1>$t/stdout
 	res=$?
+	set -e
         if [ $res == 0 ]; then
                 cat $t/stdout
         else
                 >&2 cat $t/stderr
-                exit
+                exit 1
         fi
-	set -e
 	>&2 echo "exitcode: $res"
 	rm -rf "$t"
 	return $res

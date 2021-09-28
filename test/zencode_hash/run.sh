@@ -10,6 +10,7 @@
 
 set -e
 
+ # | save hash hex.json
 cat <<EOF | zexe hash_string.zen | save hash hex.json
 rule output encoding hex
 Given nothing
@@ -19,10 +20,7 @@ Then print the 'hash'
 EOF
 
 
-cat <<EOF | zexe hash_compare.zen -a hex.json
-rule input encoding hex
-rule input untagged
-rule output encoding hex
+cat <<EOF | zexe hash_compare.zen -a hex.json | save hash hexeq.json
 Given I have a 'hex' named 'hash'
 When I set 'myhash' to 'c24463f5e352da20cb79a43f97436cce57344911e1d0ec0008cbedb5fabcca33' as 'hex'
 and I verify 'myhash' is equal to 'hash'
