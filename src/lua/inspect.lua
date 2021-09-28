@@ -69,10 +69,9 @@ local function export_arr(object, format)
   if not conv_f and format and ft == 'string' then
      conv_f = output_encoding(format).fun
   end
-  if not conv_f and not CONF.output.encoding then
-     error('CONF.output.encoding is not configured', 2)
+  if not conv_f and ZEN.CONF then
+     conv_f = ZEN.CONF.output.encoding.fun -- fallback to configured conversion function
   end
-  conv_f = CONF.output.encoding.fun -- fallback to configured conversion function
   ZEN.assert(
      type(conv_f) == 'function',
      'export_arr conversion function not configured'
