@@ -37,8 +37,10 @@ install:
 
 check: LUA=lua5.1
 check:
-	cd test/zencode_hash && LUA=${LUA} ./run.sh
+	cd test/zencode_hash     && LUA=${LUA} ./run.sh
+	cd test/zencode_cookbook && LUA=${LUA} ./run.sh
 
 check-luajit: LUA=luajit
 check-luajit:
-	cd test/zencode_hash && LUA=${LUA} ./run.sh
+	cd test/zencode_hash     && LUA=${LUA} ./run.sh
+	cd test/zencode_cookbook && LUA=${LUA} ./run.sh
