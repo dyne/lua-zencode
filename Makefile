@@ -30,6 +30,8 @@ install:
 	install src/lua/init.lua -D ${DEST_SHAREDIR}/zencode/init.lua
 	install src/lua/statemachine.lua -D ${DEST_SHAREDIR}/zencode/statemachine.lua
 	install src/lua/inspect.lua -D ${DEST_SHAREDIR}/zencode/inspect.lua
+	install src/lua/semver.lua -D ${DEST_SHAREDIR}/zencode/semver.lua
+	cp -v src/lua/crypto*lua  ${DEST_SHAREDIR}/zencode/
 	cp -v src/lua/zenroom*lua ${DEST_SHAREDIR}/zencode/
 	cp -v src/lua/zencode*lua ${DEST_SHAREDIR}/zencode/
 
