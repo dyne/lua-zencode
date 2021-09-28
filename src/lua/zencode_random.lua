@@ -17,7 +17,7 @@
 --If not, see http://www.gnu.org/licenses/agpl.txt
 --
 --Last modified by Denis Roio
---on Tuesday, 20th July 2021
+--on Tuesday, 28th September 2021
 --]]
 
 -- random operations, mostly on arrays and schemas supported
@@ -78,7 +78,7 @@ When("create the array of '' random numbers", function(s)
 		ZEN.assert(not ACK.array, "Cannot overwrite existing object: ".."array")
 		ACK.array = { }
 		for i = s,1,-1 do
-		   table.insert(ACK.array,tonumber(random_int16()))
+		   table.insert(ACK.array,tonumber(RNG.int16()))
 		end
 		ZEN.CODEC.array = { name = dest,
 							encoding = 'number',
@@ -90,7 +90,7 @@ When("create the array of '' random numbers modulo ''", function(s,m)
 		ZEN.assert(not ACK.array, "Cannot overwrite existing object: ".."array")
 		ACK.array = { }
 		for i = s,1,-1 do
-		   table.insert(ACK.array,math.floor(random_int16() % m))
+		   table.insert(ACK.array,math.floor(RNG.int16() % m))
 		end
 		ZEN.CODEC.array = { name = dest,
 							encoding = 'number',
