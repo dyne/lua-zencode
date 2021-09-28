@@ -4,7 +4,7 @@
   </a>
 </p>
 
-# Crypto primitives for Lua5.1
+# Zencode crypto language for Lua5.1
 
 <p align="center">
   <a href="https://dyne.org">
@@ -30,9 +30,9 @@
 •
 [💼 Disclaimer](#-disclaimer)
 
-This is the port of zenroom language ported out of [Zenroom](https://zenroom.org)'s VM to run on Lua 5.1 and all derivates (including Luajit, Nginx, Openresty and Tarantool)
+This is the port of zenroom language ported out of [Zenroom](https://zenroom.org)'s VM to run on Lua 5.1 and all derivates (including Luajit, Nginx, Openresty and Tarantool).
 
-Lua Zenroom is a portable cryptographic module aiming to execute secure cryptographic computations within [distributed computing](https://en.wikipedia.org/wiki/Distributed_computing) environments that can be easily scripted by Lua.
+Lua Zencode is an english-like [domain specific language (DSL)](https://en.wikipedia.org/wiki/Domain-specific_language) to easily write business logic and operate data transformation and authentication tasks using advanced crypto like [zero-knowledge proof](https://en.wikipedia.org/wiki/Zero-knowledge_proof) and [secure multi-party computation](https://en.wikipedia.org/wiki/Secure_multi-party_computation).
 
 This Lua module works only on 64-bit systems. For 32-bit support please use the Zenroom VM.
 

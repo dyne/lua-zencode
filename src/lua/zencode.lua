@@ -157,15 +157,16 @@ local function set_rule(text)
 		-- elseif rule[2] == 'load' and rule[3] then
 		--     act("zencode extension: "..rule[3])
 		--     require("zencode_"..rule[3])
-		SEMVER = require_once('semver')
+		SEMVER = require('zencode.semver')
+		VERSION = SEMVER(ZENROOM_VERSION)
 		local ver = SEMVER(rule[4])
-		if ver == ZENROOM_VERSION then
+		if ver == VERSION then
 			-- act('Zencode version match: ' .. ZENROOM_VERSION.original)
 			res = true
-		elseif ver < ZENROOM_VERSION then
+		elseif ver < VERSION then
 			-- warning('Zencode written for an older version: ' .. ver.original)
 			res = true
-		elseif ver > ZENROOM_VERSION then
+		elseif ver > VERSION then
 			-- warning('Zencode written for a newer version: ' .. ver.original)
 			res = true
 		else
@@ -279,7 +280,10 @@ local function new_state_machine()
 						strtok(string.match(trim(msg.msg):lower(), '[^:]+'))
 					for k, scen in ipairs(scenarios) do
 						if k ~= 1 then -- skip first (prefix)
+							local _require = require
+							require = function (modname) _require('zencode.'..modname) end							
 							require('zencode_' .. trimq(scen))
+							require = _require
 							ZEN:trace('Scenario ' .. scen)
 							return
 						end
@@ -594,6 +598,7 @@ function zencode:run(DATA, KEYS)
 		CODEC = self.CODEC
 		empty = self.empty
 		have = self.have
+		WHO = self.WHO
 		Iam = self.Iam
 		-- call execution and watch out for errors
 		local ok, err = pcall(x.hook, unpack(x.args))
