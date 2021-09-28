@@ -206,7 +206,7 @@ local function set_rule(text)
 			res = true
 		end
 	elseif rule[2] == 'set' and rule[4] then
-		CONF[rule[3]] = fif( tonumber(rule[4]), tonumber(rule[4]),
+		ZEN.CONF[rule[3]] = fif( tonumber(rule[4]), tonumber(rule[4]),
 							fif( rule[4]=='true', true,
 							fif( rule[4]=='false', false,
 							rule[4])))
@@ -315,38 +315,42 @@ zencode.WHO = nil
 -- init statements
 zencode.endif_steps = { endif = function() return end } --nop
 
-function Given(text, fn)
+function Given(text, fn, ctx)
+	local Z = ctx or ZEN
 	assert(
-		not ZEN.given_steps[text],
+		not Z.given_steps[text],
 		'Conflicting GIVEN statement loaded by scenario: ' .. text, 2
 	)
-	ZEN.given_steps[text] = fn
+	Z.given_steps[text] = fn
 end
-function When(text, fn)
+function When(text, fn, ctx)
+	local Z = ctx or ZEN
 	assert(
-		not ZEN.when_steps[text],
+		not Z.when_steps[text],
 		'Conflicting WHEN statement loaded by scenario: ' .. text, 2
 	)
-	ZEN.when_steps[text] = fn
+	Z.when_steps[text] = fn
 end
-function IfWhen(text, fn)
-        assert(
-		not ZEN.if_steps[text],
+function IfWhen(text, fn, ctx)
+	local Z = ctx or ZEN
+	assert(
+		not Z.if_steps[text],
 		'Conflicting IF-WHEN statement loaded by scenario: ' .. text, 2
 	)
 	assert(
-		not ZEN.when_steps[text],
+		not Z.when_steps[text],
 		'Conflicting IF-WHEN statement loaded by scenario: ' .. text, 2
 	)
-	ZEN.if_steps[text]   = fn
-	ZEN.when_steps[text] = fn
+	Z.if_steps[text]   = fn
+	Z.when_steps[text] = fn
 end
-function Then(text, fn)
+function Then(text, fn, ctx)
+	local Z = ctx or ZEN
 	assert(
-		not ZEN.then_steps[text],
+		not Z.then_steps[text],
 		'Conflicting THEN statement loaded by scenario : ' .. text, 2
 	)
-	ZEN.then_steps[text] = fn
+	Z.then_steps[text] = fn
 end
 
 ---
@@ -355,15 +359,15 @@ end
 --
 -- @function Iam(name)
 -- @param name own name to be saved in WHO
-function Iam(name)
+function zencode.Iam(name, ctx)
+	local Z = ctx or ZEN
 	if name then
-		ZEN.assert(not WHO, 'Identity already defined in WHO')
-		ZEN.assert(type(name) == 'string', 'Own name not a string')
-		zencode.WHO = name
+		Z.assert(not WHO, 'Identity already defined in WHO')
+		Z.assert(type(name) == 'string', 'Own name not a string')
+		Z.WHO = name
 	else
-		ZEN.assert(WHO, 'No identity specified in WHO')
+		Z.assert(WHO, 'No identity specified in WHO')
 	end
-	assert(ZEN.OK)
 end
 
 -- init schemas
@@ -384,7 +388,7 @@ function zencode.add_schema(arr)
 	end
 end
 
-function have(obj) -- accepts arrays for depth checks
+function zencode.have(obj) -- accepts arrays for depth checks
 	local res
 	if luatype(obj) == 'table' then
 		local prev = ACK
@@ -396,16 +400,16 @@ function have(obj) -- accepts arrays for depth checks
 			prev = res
 		end
 	else
-		res = ZEN.ACK[uscore(obj)]
+		res = ACK[uscore(obj)]
 		if not res then
 			error('Cannot find object: ' .. obj, 2)
 		end
 	end
 	return res
 end
-function empty(obj)
+function zencode.empty(obj)
 	-- convert all spaces to underscore in argument
-	if ZEN.ACK[uscore(obj)] then
+	if ACK[uscore(obj)] then
 		error('Cannot overwrite existing object: ' .. obj, 2)
 	end
 end
@@ -473,8 +477,7 @@ function zencode:parse(text)
 	local parse_prefix = parse_prefix -- optimization
    for line in zencode_newline_iter(text) do
 	linenum = linenum + 1
-	  if zencode_isempty(line) then goto continue end
-	  if zencode_iscomment(line) then goto continue end
+	  if not zencode_isempty(line) and not zencode_iscomment(line) then
 	--   xxx('Line: '.. text, 3)
 	  -- max length for single zencode line is #define MAX_LINE
 	  -- hard-coded inside zenroom.h
@@ -493,7 +496,7 @@ function zencode:parse(text)
 	  assert(fm(self.machine, { msg = line, Z = self }),
 				line.."\n    "..
 				"Invalid transition from: "..self.machine.current)
-	  ::continue::
+	  end
    end
    collectgarbage'collect'
    return true
@@ -557,32 +560,18 @@ local function manage_branching(x)
 	return false
 end
 
-function zencode:run()
-	-- runtime checks
-	-- if not self.checks.version then
-	-- 	warning(
-	-- 		'Zencode is missing version check, please add: rule check version N.N.N'
-	-- 	)
-	-- end
+function zencode:run(DATA, KEYS)
+
 	-- HEAP setup
-	self.IN = {} -- import global DATA from json
-	if DATA then
-		-- if plain array conjoin into associative
-		self.IN = self.CONF.input.format.fun(DATA) or {}
-	end
-	self.IN.KEYS = {} -- import global KEYS from json
-	if KEYS then
-		self.IN.KEYS = self.CONF.input.format.fun(KEYS) or {}
-	end
+	self.IN = DATA or { }
+	self.IN.KEYS = KEYS or { }
 	-- convert all spaces in keys to underscore
 	self.IN = IN_uscore(self.IN)
 
 	-- EXEC zencode
 	for _, x in pairs(self.AST) do
 		-- ZEN:trace(x.source)
-		if manage_branching(x) then
-			goto continue
-		end
+		if not manage_branching(x) then
 		-- HEAP integrity guard
 		if self.CONF.heapguard then
 			-- trigger upon switch to when or then section
@@ -595,9 +584,18 @@ function zencode:run()
 				deepmap(zenguard, self.ACK)
 			end
 		end
-
+		-- prepare the protected execution environment
 		self.OK = true
-		ZEN.exitcode=0
+		self.exitcode=0
+		IN = self.IN
+		ACK = self.ACK
+		OUT = self.OUT
+		CONF = self.CONF
+		CODEC = self.CODEC
+		empty = self.empty
+		have = self.have
+		Iam = self.Iam
+		-- call execution and watch out for errors
 		local ok, err = pcall(x.hook, unpack(x.args))
 		if not ok or not self.OK then
 			if err then
@@ -606,7 +604,7 @@ function zencode:run()
 			error(err ..'\nstatement:\t'.. x.source, 2) -- traceback print inside
 		end
 		collectgarbage 'collect'
-		::continue::
+		end -- not manage_branching
 	end
 	-- PRINT output
 	self:trace('--- Zencode execution completed')
@@ -636,10 +634,10 @@ end
 
 function zencode:heap()
 	return ({
-		IN = ZEN.IN,
-		TMP = ZEN.TMP,
-		ACK = ZEN.ACK,
-		OUT = ZEN.OUT
+		IN = zencode.IN,
+		TMP = zencode.TMP,
+		ACK = zencode.ACK,
+		OUT = zencode.OUT
 	})
 end
 
