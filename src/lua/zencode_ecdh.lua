@@ -17,7 +17,7 @@
 --If not, see http://www.gnu.org/licenses/agpl.txt
 --
 --Last modified by Denis Roio
---on Saturday, 4th September 2021
+--on Tuesday, 28th September 2021
 --]]
 
 -- defined outside because reused across different schemas
@@ -199,13 +199,11 @@ local function _havekey_compat()
 		return sk
 	else
 		local kp = have'keypair'
-		if not kp then goto fail end
+		ZEN.assert(kp, "ECDH Keypair not found anywhere")
 		sk = kp.private_key
-		if not sk then goto fail end
+		ZEN.assert(sk, "ECDH Private key not found anywhere in keys or keypair")
 		return sk
 	end
-	::fail::
-	ZEN.assert(sk, "ECDH Private key not found anywhere in keys or keypair")
 end
 
 local function _pubkey_compat(_key)
