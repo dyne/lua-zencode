@@ -25,29 +25,29 @@ When(
     "create the hash of ''",
     function(s)
         -- TODO: hash an array
-        local src = ZEN.ACK[s]
+        local src = ACK[s]
         ZEN.assert(src, 'Object not found: ' .. s)
         if luatype(src) == 'table' then
             src = ZEN.serialize(src) -- serialize tables using zenroom's algo
         end
-        ZEN.ACK.hash = HASH.new(ZEN.CONF.hash):process(src)
+        ACK.hash = HASH.new(CONF.hash):process(src)
     end
 )
 
 When(
     "create the hash of '' using ''",
     function(s, h)
-        local src = ZEN.ACK[s]
+        local src = ACK[s]
         ZEN.assert(src, 'Object not found: ' .. s)
         if luatype(src) == 'table' then
             src = ZEN.serialize(src)
         end
         if strcasecmp(h, 'sha256') then
-            ZEN.ACK.hash = sha256(src)
+            ACK.hash = sha256(src)
         elseif strcasecmp(h, 'sha512') then
-            ZEN.ACK.hash = sha512(src)
+            ACK.hash = sha512(src)
         end
-        ZEN.assert(ZEN.ACK.hash, 'Invalid hash: ' .. h)
+        ZEN.assert(ACK.hash, 'Invalid hash: ' .. h)
     end
 )
 
@@ -57,7 +57,7 @@ When(
     function(n)
         local bits = tonumber(n)
         ZEN.assert(bits, 'Invalid number of bits: ' .. n)
-        ZEN.ACK.random_object = OCTET.random(math.ceil(bits / 8))
+        ACK.random_object = OCTET.random(math.ceil(bits / 8))
     end
 )
 
@@ -69,22 +69,22 @@ When(
             luatype(F.hashtopoint) == 'function',
             'Hash type ' .. what .. ' is invalid (no hashtopoint)'
         )
-        local A = ZEN.ACK[arr]
+        local A = ACK[arr]
         ZEN.assert(A, 'Object not found: ' .. arr)
         local count = isarray(A)
         ZEN.assert(count > 0, 'Object is not an array: ' .. arr)
-        ZEN.ACK.hash_to_point = deepmap(F.hashtopoint, A)
+        ACK.hash_to_point = deepmap(F.hashtopoint, A)
     end
 )
 
 When(
     "create the hashes of each object in ''",
     function(arr)
-        local A = ZEN.ACK[arr]
+        local A = ACK[arr]
         ZEN.assert(A, 'Object not found: ' .. arr)
         local count = isarray(A)
         ZEN.assert(count > 0, 'Object is not an array: ' .. arr)
-        ZEN.ACK.hashes = deepmap(sha256, A)
+        ACK.hashes = deepmap(sha256, A)
     end
 )
 
@@ -92,40 +92,40 @@ When(
 When(
     "create the HMAC of '' with key ''",
     function(obj, key)
-        local src = ZEN.ACK[obj]
+        local src = ACK[obj]
         ZEN.assert(src, 'Object not found: ' .. obj)
         if luatype(src) == 'table' then
             src = ZEN.serialize(src)
         end
-        local hkey = ZEN.ACK[key]
+        local hkey = ACK[key]
         ZEN.assert(hkey, 'Key not found: ' .. key)
-        ZEN.ACK.HMAC = HASH.new(ZEN.CONF.hash):hmac(hkey, obj)
+        ACK.HMAC = HASH.new(CONF.hash):hmac(hkey, obj)
     end
 )
 
 When(
     "create the key derivation of ''",
     function(obj)
-        local src = ZEN.ACK[obj]
+        local src = ACK[obj]
         ZEN.assert(src, 'Object not found: ' .. obj)
         if luatype(src) == 'table' then
             src = ZEN.serialize(src)
         end
-        ZEN.ACK.key_derivation = HASH.new(ZEN.CONF.hash):kdf(src)
+        ACK.key_derivation = HASH.new(CONF.hash):kdf(src)
     end
 )
 
 When(
     "create the key derivation of '' with password ''",
     function(obj, salt)
-        local src = ZEN.ACK[obj]
+        local src = ACK[obj]
         ZEN.assert(src, 'Object not found: ' .. obj)
         if luatype(src) == 'table' then
             src = ZEN.serialize(src)
         end
-        local pass = ZEN.ACK[salt]
+        local pass = ACK[salt]
         ZEN.assert(pass, 'Password not found: ' .. salt)
-        ZEN.ACK.key_derivation =
-            HASH.new(ZEN.CONF.hash):pbkdf2(src, {salt = pass}) -- , iterations = 10000, length = 32
+        ACK.key_derivation =
+            HASH.new(CONF.hash):pbkdf2(src, {salt = pass}) -- , iterations = 10000, length = 32
     end
 )
