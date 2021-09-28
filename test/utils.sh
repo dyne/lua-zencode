@@ -17,6 +17,8 @@ debug() {
 	return $?
 }
 
+LUA=${LUA:-lua5.1}
+
 zexe() {
 	if [ "$DEBUG" == "1" ]; then
 		debug $*
@@ -26,7 +28,7 @@ zexe() {
 	shift 1
 	echo >&2
 	echo "====================================" >&2
-	>&2 echo "== TEST: ${SUBDOC} $out"
+	>&2 echo "== TEST: ${SUBDOC} $out ($LUA)"
 	data=""
 	keys=""
 	for i in ${*}; do
