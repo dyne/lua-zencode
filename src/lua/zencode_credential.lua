@@ -17,12 +17,12 @@
 --If not, see http://www.gnu.org/licenses/agpl.txt
 --
 --Last modified by Denis Roio
---on Tuesday, 20th July 2021
+--on Tuesday, 28th September 2021
 --]]
 
 -- ABC/COCONUT implementation in Zencode
 
-local CRED = require_once('crypto_credential')
+local CRED = require('crypto_credential')
 -- local G1 = ECP.generator()
 local G2 = ECP2.generator()
 

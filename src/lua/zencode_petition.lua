@@ -17,11 +17,11 @@
 --If not, see http://www.gnu.org/licenses/agpl.txt
 --
 --Last modified by Denis Roio
---on Tuesday, 20th July 2021
+--on Tuesday, 28th September 2021
 --]]
 
-local CRED = require_once'crypto_credential'
-local PET = require_once'crypto_petition'
+local CRED = require'crypto_credential'
+local PET = require'crypto_petition'
 
 local function petition_scores_f(o)
 	local obj = deepmap(CONF.input.encoding.fun, o)

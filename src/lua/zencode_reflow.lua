@@ -17,12 +17,12 @@
 --If not, see http://www.gnu.org/licenses/agpl.txt
 --
 --Last modified by Denis Roio
---on Wednesday, 14th July 2021
+--on Tuesday, 28th September 2021
 --]]
 
-ABC = require_once('crypto_credential')
+ABC = require('crypto_credential')
 
-require_once('zencode_credential')
+require('zencode_credential')
 
 G2 = ECP2.generator()
 

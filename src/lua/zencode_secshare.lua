@@ -17,12 +17,12 @@
 --If not, see http://www.gnu.org/licenses/agpl.txt
 --
 --Last modified by Denis Roio
---on Tuesday, 20th July 2021
+--on Tuesday, 28th September 2021
 --]]
 
 -- Lagrange interpolation implementation in Zencode
 
-LAG = require_once('crypto_lagrange_interpolation')
+LAG = require('crypto_lagrange_interpolation')
 
 function single_share_f(o)
    local obj = deepmap(CONF.input.encoding.fun, o)
