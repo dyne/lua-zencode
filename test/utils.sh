@@ -2,18 +2,7 @@ set -e
 # set -o pipefail
 
 debug() {
-	if [ "$Z" == "" ]; then
-		>&2 echo "no zenroom executable configured"
-		return 1
-	fi
-	if [ "$1" == "" ]; then
-		>&2 echo "no script filename configured"
-		return 1
-	fi
-	out="$1"
-	shift 1
-	>&2 echo "test: $out"
-	tee "$out" | $Z -z $*
+	zexe $*
 	return $?
 }
 
@@ -32,6 +21,7 @@ zexe() {
 	data=""
 	keys=""
 	for i in ${*}; do
+		if [[ "$i" == "-z" ]]; then continue; fi
 		if [[ "$i" == "-a" ]]; then data=1; continue; fi
 		if [[ $data == 1 ]]; then data="$i"; fi
 		if [[ "$i" == "-k" ]]; then keys=1; continue; fi

@@ -101,9 +101,6 @@ local function pickin(section, what, conv, fail)
    TMP.name = what
    TMP.root = section
    assert(ZEN.OK)
-   if DEBUG > 1 then
-      ZEN:ftrace('pickin found ' .. what .. ' in ' .. section)
-   end
 end
 
 local function ack_table(key, val)
