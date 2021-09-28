@@ -17,7 +17,7 @@
 --If not, see http://www.gnu.org/licenses/agpl.txt
 --
 --Last modified by Denis Roio
---on Monday, 27th September 2021
+--on Tuesday, 28th September 2021
 --]]
 
 require'zenroom'
@@ -25,7 +25,7 @@ require'zenroom'
 MACHINE = require'zencode.statemachine'
 Z = 'zencode.zencode'
 ZEN = require(Z)
-
+I = require'zencode.inspect'
 require'zencode.zenroom_common'
 
 require(Z..'_data') -- pick/in, conversions etc.

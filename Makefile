@@ -29,6 +29,7 @@ install: DEST_SHAREDIR ?= ${PREFIX}/share/lua/5.1
 install:
 	install src/lua/init.lua -D ${DEST_SHAREDIR}/zencode/init.lua
 	install src/lua/statemachine.lua -D ${DEST_SHAREDIR}/zencode/statemachine.lua
+	install src/lua/inspect.lua -D ${DEST_SHAREDIR}/zencode/inspect.lua
 	cp -v src/lua/zenroom*lua ${DEST_SHAREDIR}/zencode/
 	cp -v src/lua/zencode*lua ${DEST_SHAREDIR}/zencode/
 
