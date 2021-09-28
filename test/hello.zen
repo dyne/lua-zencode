@@ -1,0 +1,29 @@
+ZEN = require'zencode'
+JSON = require'rapidjson'
+
+local script = [[
+Given Nothing
+When I set 'message' to 'Hello World!' as 'string'
+Then print the 'message' as 'string'
+]]
+
+local out
+ZEN:begin()
+ZEN:parse(script)
+out = ZEN:run()
+-- out is a table with outputs from Zencode
+print(JSON.encode(out))
+
+
+script = [[
+Scenario ecdh
+Given I am known as 'Alice'
+When I create the ecdh key
+and I create the ecdh public key
+Then print my 'keys'
+and print my 'ecdh public key'
+]]
+ZEN:begin()
+ZEN:parse(script)
+out = ZEN:run()
+print(JSON.encode(out))
