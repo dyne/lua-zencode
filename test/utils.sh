@@ -33,7 +33,7 @@ zexe() {
 	# >&2 echo $t
 	        set +e
 		tee "$out" | \
-			lua5.1 -l zenroom ../ztest.lua "$data $keys" 2>$t/stderr 1>$t/stdout
+			$LUA -l zenroom ../ztest.lua "$data $keys" 2>$t/stderr 1>$t/stdout
 	res=$?
 	set -e
         if [ $res == 0 ]; then

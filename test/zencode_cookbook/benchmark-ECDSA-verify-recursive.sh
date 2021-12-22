@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+. ../utils.sh
+
 time=50
 
 users=""
@@ -52,7 +54,7 @@ EOF
 cat <<EOF  > $zencode
 rule check version 1.0.0 
 Scenario 'ecdh': Bob verifies the signature from JackInTheShop 
-Given I have a 'public key' from 'JackInTheShop' 
+Given I have a 'public key' in 'JackInTheShop' 
 Given I have a 'string dictionary' named 'TransactionsBatchA' 
 Given I have a 'signature' named 'TransactionsBatchA.signature' 
 #
@@ -65,7 +67,7 @@ EOF
 
 ecdsa() {
 
-zenroom -z $zencode -a $data
+cat $zencode | zexe -a $data
 
 }
 
@@ -73,7 +75,7 @@ zenroom -z $zencode -a $data
 loop(){
 for user in ${users[@]}
 do
-ecdsa ${user}
+cat $zencode | zexe -a $data
 echo  " "
 echo  "-----------------------------"
 echo  " "

@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-LUA=luajit
 . ../utils.sh
 
 time=50

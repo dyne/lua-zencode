@@ -34,31 +34,44 @@ This is the port of zenroom language ported out of [Zenroom](https://zenroom.org
 
 Lua Zencode is an english-like [domain specific language (DSL)](https://en.wikipedia.org/wiki/Domain-specific_language) to easily write business logic and operate data transformation and authentication tasks using advanced crypto like [zero-knowledge proof](https://en.wikipedia.org/wiki/Zero-knowledge_proof) and [secure multi-party computation](https://en.wikipedia.org/wiki/Secure_multi-party_computation).
 
-This Lua module works only on 64-bit systems. For 32-bit support please use the Zenroom VM.
-
 ## 💾 Install
 
-To build from source the following dependencies are needed:
+First install the [Lua Zenroom](https://lua.zenroom.org) crypto primitives.
+
+Then simply run the `install` targets of `Makefile`:
 ```
-gcc make cmake zsh
+git clone https://github.com/dyne/lua-zenroom
+git clone https://github.com/dyne/lua-zencode
+cd lua-zenroom && make && sudo make install
+cd lua-zencode && make install
 ```
 
-Then simply run the default targets of `Makefile`:
-```
-make && make install
-```
-Lua Zenroom will be installed in `/usr/local/lib/lua/5.1/libzenroom.so` and `/usr/local/share/lua/5.1/zenroom/`.
+Lua Zencode will be installed in `/usr/local/share/lua/5.1/zencode/`.
 
 Luarocks spec file and upload is work in progress.
 
 ---
 ## 🎮 Quick start
 
-To see Lua-Zenroom in action you can fire up the Lua interpreter loading `zenroom`
+To see Zencode in action you can call the Zencode interpreter from a simple Lua script
 
+```lua
+ZEN = require'zencode'
+JSON = require'rapidjson'
+
+local script = [[
+Given Nothing
+When I set 'message' to 'Hello World!' as 'string'
+Then print the 'message' as 'string'
+]]
+ZEN:begin()
+ZEN:parse(script)
+local out = ZEN:run()
+-- out is a table with outputs from Zencode
+print(JSON.encode(out))
 ```
-luajit -l zenroom
-```
+
+The script above makes use of a rapidJSON to show the output, anything rendering a lua table will work.
 
 As a working example you can now generate an ECDH keypair
 

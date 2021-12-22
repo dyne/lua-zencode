@@ -17,12 +17,13 @@
 --If not, see http://www.gnu.org/licenses/agpl.txt
 --
 --Last modified by Denis Roio
---on Tuesday, 28th September 2021
+--on Friday, 1st October 2021
 --]]
 --- Zencode data internals
 
+local zd = { }
 -- Used in scenario's schema declarations to cast to zenroom. type
-ZEN.get = function(obj, key, conversion)
+zd.get = function(obj, key, conversion)
    assert(type(key) == 'string', 'ZEN.get key is not a string', 2)
    assert(
       not conversion or type(conversion) == 'function',
@@ -99,7 +100,7 @@ end
 --   luatype     = type of raw data for lua
 --   zentype     = type of data for zenroom (array, dict, element, schema)
 -- }
-function guess_conversion(obj, definition)
+function zd.guess_conversion(obj, definition)
    local t
    local objtype = luatype(obj)
    local res
@@ -212,7 +213,7 @@ end
 -- takes a data object and the guessed structure, operates the
 -- conversion and returns the resulting raw data to be used inside the
 -- WHEN block in HEAP.
-function operate_conversion(guessed)
+function zd.operate_conversion(guessed)
    if not guessed.fun then
       error('No conversion operation guessed', 2)
       return nil
@@ -296,7 +297,7 @@ local function outcast_bin(obj)
    return O.to_bin(obj)
 end
 -- takes a string returns the function, good for use in deepmap(fun,table)
-function guess_outcast(cast)
+function zd.guess_outcast(cast)
    if not cast then
       error('guess_outcast called with nil argument', 2)
    end
@@ -328,7 +329,7 @@ function guess_outcast(cast)
 end
 
 -- TODO: rename to check_output_codec_encoding(v)
-function check_codec(value)
+function zd.check_codec(value)
    if not ZEN.CODEC then
       return ZEN.CONF.output.encoding.name
    end
@@ -344,7 +345,7 @@ function check_codec(value)
    return ZEN.CONF.output.encoding.name
 end
 
-function new_codec(cname, parameters, clone)
+function zd.new_codec(cname, parameters, clone)
    if not cname then error("Missing name in new codec", 2) end
    local name = fif(luatype(cname) == 'string', uscore(cname), cname) -- may be a numerical index
    if not ACK[name] then error("Cannot create codec, object not found: "..name, 2) end
@@ -413,7 +414,7 @@ local function sort_apply(fun,t,...)
 	  end
    end
 end
-function serialize(tab)
+function zd.serialize(tab)
    assert(luatype(tab) == 'table', 'Cannot serialize: not a table', 2)
    local octets = OCTET.zero(1)
    local strings = 'K'
@@ -436,7 +437,7 @@ end
 
 -- eliminate all empty string objects "" and all empty dictionaries
 -- (containing only empy objects), uses recursion into tables
-function prune(tab)
+function zd.prune(tab)
    assert(luatype(tab) == 'table', 'Cannot prune: not a table', 2)
    local pruned_values = deepmap(function(v)
       if #v == 0 then return nil
@@ -462,8 +463,11 @@ function prune(tab)
    pruned_tables = prune_in(pruned_values)
    return pruned_tables
 end
-   ---
--- Compare equality of two data objects (TODO: octet, ECP, etc.)
+
+return(zd)
+---
+
+   -- Compare equality of two data objects (TODO: octet, ECP, etc.)
 -- @function ZEN:eq(first, second)
 
 ---

@@ -17,10 +17,11 @@
 --If not, see http://www.gnu.org/licenses/agpl.txt
 --
 --Last modified by Denis Roio
---on Monday, 27th September 2021
+--on Friday, 1st October 2021
 --]]
 
-function uscore(input)
+local zc = { }
+function zc.uscore(input)
 	if luatype(input) == 'string' then
 		return string.gsub(input, ' ', '_')
 	elseif luatype(input) == 'number' then
@@ -29,7 +30,7 @@ function uscore(input)
 		error("Underscore transform not a string or number: "..luatype(input), 2)
 	end
 end
-function space(input)
+function zc.space(input)
 	if luatype(input) == 'string' then
 		return string.gsub(input, '_', ' ')
 	elseif luatype(input) == 'number' then
@@ -41,7 +42,7 @@ end
 
 -- gets a string and returns the associated function, string and prefix
 -- comes before schema check
-function input_encoding(what)
+function zc.input_encoding(what)
    if not luatype(what) == 'string' then
 	  error("Call to input_encoding argument is not a string: "..type(what),2)
    end
@@ -137,7 +138,7 @@ local function _native(data, fun)
 	end
 end
 -- gets a string and returns the associated function, string and prefix
-function output_encoding(what)
+function zc.output_encoding(what)
 	if what == 'u64' or what == 'url64' then
 		return { fun = function(data)
 			return _native(data, O.to_url64)
@@ -174,7 +175,7 @@ function output_encoding(what)
 end
 
 -- debugging facility
-function xxx(s, n)
+function zc.xxx(s, n)
    n = n or 3
    if ZEN.DEBUG and ZEN.DEBUG >= n then
 	  printerr("LUA "..s)
@@ -186,7 +187,7 @@ end
 -- from: https://www.lua.org/pil/19.3.html
 _G["lua_pairs"]  = _G["pairs"]
 _G["lua_ipairs"] = _G["ipairs"]
-local function _pairs(t)
+function zc.pairs(t)
    local a = {}
    for n in lua_pairs(t) do table.insert(a, n) end
    table.sort(a)
@@ -213,10 +214,10 @@ end
 -- are anyway unnecessary corner cases in zenroom, which exits cleanly
 -- and signaling a stack overflow. Please report back if this
 -- generates problems leading to the pairs for loop in function above.
-_G["sort_pairs"]  = _pairs
-_G["sort_ipairs"] = _pairs
+-- _G["sort_pairs"]  = _pairs
+-- _G["sort_ipairs"] = _pairs
 
-function deepcopy(orig)
+function zc.deepcopy(orig)
    local orig_type = type(orig)
    local copy
    if orig_type == 'table' then
@@ -234,7 +235,7 @@ end
 -- deep recursive map on a tree structure
 -- for usage see test/deepmap.lua
 -- operates only on strings, passes numbers through
-function deepmap(fun,t,...)
+function zc.deepmap(fun,t,...)
    local luatype = luatype
    if luatype(fun) ~= 'function' then
 	  error("Internal error: deepmap 1st argument is not a function", 3)
@@ -255,7 +256,7 @@ function deepmap(fun,t,...)
    return setmetatable(res, getmetatable(t))
 end
 
-function isarray(obj)
+function zc.isarray(obj)
    if not obj then
 	  warn("Argument of isarray() is nil")
 	  return 0
@@ -271,7 +272,7 @@ function isarray(obj)
    return count
 end
 
-function isdictionary(obj)
+function zc.isdictionary(obj)
    if not obj then
 	  warn("Argument of isdictionary() is nil")
 	  return 0
@@ -287,7 +288,7 @@ function isdictionary(obj)
    return count
 end
 
-function array_contains(arr, obj)
+function zc.array_contains(arr, obj)
    assert(luatype(arr) == 'table', "Internal error: array_contains argument is not a table")
    for k, v in pairs(arr) do
 	  assert(luatype(k) == 'number', "Internal error: array_contains argument is not an array")
@@ -297,42 +298,22 @@ function array_contains(arr, obj)
 end
 
 
-function help(module)
-   if module == nil then
-	  print("usage: help(module)")
-	  print("example > help(octet)")
-	  print("example > help(ecdh)")
-	  print("example > help(ecp)")
-	  return
-   end
-   for k,v in pairs(module) do
-	  if type(v)~='table' and string.sub(k,1,1)~='_' then
-		 print("class method: "..k)
-	  end
-   end
-   -- local inst = module.new()
-   -- if inst == nil then return end
-   -- for s,f in pairs(getmetatable(inst)) do
-   -- 	  if(string.sub(s,1,2)~='__') then print("object method: "..s) end
-   -- end
-end
-
 -- TODO: optimize in C using strtok
 local function split(src,pat)
    local tbl = {}
    src:gsub(pat, function(x) tbl[#tbl+1]=x end)
    return tbl
 end
-function strtok(src, pat)
+function zc.strtok(src, pat)
    if not src then return { } end
    pat = pat or "%S+"
-   ZEN.assert(luatype(src) == "string", "strtok error: argument is not a string")
+   if not luatype(src) == "string" then error("strtok error: argument is not a string", 2) end
    return split(src, pat)
 end
 
 -- assert all values in table are converted to zenroom types
 -- used in zencode when transitioning out of given memory
-function zenguard(val)
+function zc.zenguard(val)
    if not (iszen(type(val)) or tonumber(val)) then
 		I.print(ZEN.heap().ACK)
 		-- xxx("Invalid value: "..val)
@@ -341,3 +322,5 @@ function zenguard(val)
 		return nil
    end
 end
+
+return zc

@@ -17,41 +17,53 @@
 --If not, see http://www.gnu.org/licenses/agpl.txt
 --
 --Last modified by Denis Roio
---on Tuesday, 28th September 2021
+--on Friday, 1st October 2021
 --]]
 
 require'zenroom'
 
-MACHINE = require'zencode.statemachine'
-Z = 'zencode.zencode'
-ZEN = require(Z)
-I = require'zencode.inspect'
-require'zencode.zenroom_common'
+local zen = { }
+local ZZ = 'zencode.zencode'
+zen = require(ZZ)
+Given = zen.Given
+When = zen.When
+IfWhen = zen.IfWhen
+Then = zen.Then
 
-require(Z..'_data') -- pick/in, conversions etc.
-require('zencode.zencode_given')
-require('zencode.zencode_when')
-require('zencode.zencode_hash') -- when extension
-require('zencode.zencode_array') -- when extension
-require('zencode.zencode_random') -- when extension
-require('zencode.zencode_dictionary') -- when extension
-require('zencode.zencode_verify') -- when extension
-require('zencode.zencode_then')
-require('zencode.zencode_keys')
-require('zencode.zencode_debug')
+ZEN = zen
+zen.common = require'zencode.zenroom_common'
+zen.machine = require'zencode.statemachine'
+zen.inspect = require'zencode.inspect'
+zen.semver = require('zencode.semver')
+
+-- MACHINE = require'zencode.statemachine'
+
+zen.data   = require(ZZ..'_data') -- pick/in, conversions etc.
+-- ZEN = zen
+require(ZZ..'_given')
+require(ZZ..'_when')
+require(ZZ..'_hash') -- when extension
+require(ZZ..'_array') -- when extension
+require(ZZ..'_random') -- when extension
+require(ZZ..'_dictionary') -- when extension
+require(ZZ..'_verify') -- when extension
+require(ZZ..'_then')
+require(ZZ..'_keys')
+require(ZZ..'_debug')
 -- scenario are loaded on-demand
 -- scenarios can only implement "When ..." steps
 _G['Given'] = nil
 _G['Then'] = nil
+ZEN = nil
 
 -- defaults
-ZEN.CONF = {
+zen.CONF = {
 	input = {
-		encoding = input_encoding('base64'),
+		encoding = zen.common.input_encoding('base64'),
 		tagged = false
 	},
 	output = {
-		encoding = output_encoding('base64'),
+		encoding = zen.common.output_encoding('base64'),
 		versioning = false
 	},
 	parser = {strict_match = true},
@@ -72,18 +84,18 @@ _G['COPYRIGHT'] =
 	[[
 Forked by Jaromil on 18 January 2020 from Coconut Petition
 ]]
-ZEN.SALT = ECP.hashtopoint(OCTET.from_string(COPYRIGHT .. LICENSE))
+zen.SALT = ECP.hashtopoint(OCTET.from_string(COPYRIGHT .. LICENSE))
 -- Calculate a system-wide crypto challenge for ZKP operations
 -- returns a BIG INT
 -- this is a sort of salted hash for advanced ZKP operations and
 -- should not be changed. It may be made configurable in future.
-ZEN.challenge = function(list)
+zen.challenge = function(list)
 	local challenge =
-		ECP.generator():octet() .. ECP2.generator():octet() .. SALT:octet()
+		ECP.generator():octet() .. ECP2.generator():octet() .. self.SALT:octet()
 	local ser = serialize(list)
 	return INT.new(
 		sha256(challenge .. ser.octets .. OCTET.from_string(ser.strings))
 	) % ECP.order()
 end
 
-return(ZEN)
+return(zen)
